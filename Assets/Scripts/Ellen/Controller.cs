@@ -15,6 +15,7 @@ public class Controller : MonoBehaviour
         this.animator = GetComponent<Animator>();
         this.facingRight = true;
         this.attack = 0;
+       
     }
 
     // Update is called once per frame
