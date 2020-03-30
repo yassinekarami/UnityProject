@@ -8,6 +8,8 @@ public class Controller : MonoBehaviour
     [SerializeField] float horizontal;
     bool facingRight;
     [SerializeField] int attack;
+    Rigidbody rb;
+    public float jumpForce;
 
     // Start is called before the first frame update
     void Start()
@@ -15,6 +17,7 @@ public class Controller : MonoBehaviour
         this.animator = GetComponent<Animator>();
         this.facingRight = true;
         this.attack = 0;
+        this.rb = GetComponent<Rigidbody>();
        
     }
 
@@ -23,7 +26,6 @@ public class Controller : MonoBehaviour
     {
         this.horizontal = Input.GetAxis("Horizontal");
      
-      
         if(this.facingRight && Input.GetAxis("Horizontal") < 0 || !this.facingRight && Input.GetAxis("Horizontal") > 0 )
         {
             Vector3 rotate = new Vector3(gameObject.transform.localScale.x, gameObject.transform.localScale.y, gameObject.transform.localScale.z);
@@ -40,6 +42,13 @@ public class Controller : MonoBehaviour
         {
             this.attack++;
         }
+        if(Input.GetButtonDown("Jump"))
+        {
+            this.attack = 0;
+            this.rb.AddForce(new Vector3(0, this.jumpForce, 0), ForceMode.Impulse);
+        }
+
+        this.animator.SetFloat("jumpForce", this.rb.velocity.y);
         this.animator.SetInteger("attack", this.attack);
         this.animator.SetFloat("run", Mathf.Abs(this.horizontal));
     }
