@@ -4,10 +4,12 @@ using UnityEngine;
 
 public class Controller : MonoBehaviour
 {
+
     Animator animator;
     Rigidbody rb;
     GameObject staff;
     GameObject pistol;
+    public GameObject bullet;
 
     public float jumpForce;
     bool facingRight;
@@ -52,8 +54,6 @@ public class Controller : MonoBehaviour
         this.attackParam = "attack";
         this.shootParam = "shoot";
         this.isShootingParam = "isShooting";
-
-
     }
 
     // Update is called once per frame
@@ -108,5 +108,22 @@ public class Controller : MonoBehaviour
     {
         this.attack = 0;
         this.staff.SetActive(false);
+    }
+
+    private void instantiateBullet()
+    {
+        Instantiate(this.bullet, this.pistol.transform.position, Quaternion.identity);
+    }
+
+    public void OnTriggerStay(Collider other)
+    {
+        if(attack > 0 && other.gameObject.tag == "Enemy")
+        {
+            if (Input.GetButtonDown(this.attackInput))
+            {
+                // mettre un event a la place
+                other.gameObject.BroadcastMessage("getDammage");
+            }
+        } 
     }
 }
