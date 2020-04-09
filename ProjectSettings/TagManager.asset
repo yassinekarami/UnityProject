@@ -9,6 +9,7 @@ TagManager:
   - Staff
   - Pistol
   - Enemy
+  - StaffParticle
   layers:
   - Default
   - TransparentFX

@@ -5,6 +5,11 @@ using UnityEngine;
 public class Bullet : MonoBehaviour
 {
     public float speed;
+
+
+    public delegate void hitEnemy();
+    public static event hitEnemy onHitEnemy;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -21,9 +26,9 @@ public class Bullet : MonoBehaviour
     {
         if (other.gameObject.tag == "Enemy")
         {
-            // mettre un event a la place
-            other.gameObject.BroadcastMessage("getDammage");
+            onHitEnemy?.Invoke();
             Destroy(this.gameObject);
         }
     }
+
 }
