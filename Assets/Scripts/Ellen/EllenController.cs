@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class EllenController : MonoBehaviour
 {
-
     Animator animator;
     Rigidbody rb;
     GameObject staff;
@@ -19,24 +18,28 @@ public class EllenController : MonoBehaviour
 
     [SerializeField] int attack;
     [SerializeField] int shoot;
+    [SerializeField] float vertical;
     [SerializeField] float horizontal;
     [SerializeField] int health;
 
     // strings for input
-    string horizontalInput;
-    string attackInput;
-    string jumpInput;
-    string shootInput;
+    string horizontalInput = "Horizontal";
+    string verticalInput = "Vertical";
+    string attackInput = "Attack";
+    string jumpInput = "Jump";
+    string shootInput = "Shoot";
 
     // strings for params
-    string jumpForceParam;
-    string runParam;
-    string attackParam;
-    string shootParam;
-    string isShootingParam;
-    string deathParam;
-    string hitParam;
-
+    string jumpForceParam = "jumpForce";
+    string runHorizontalParam = "runHorizontal";
+    string runVerticalParam = "runVertical";
+    string isRunningParam = "isRunning";
+    string attackParam = "attack";
+    string shootParam = "shoot";
+    string isShootingParam = "isShooting";
+    string deathParam = "death";
+    string hitParam = "hit";
+    string turnParam  = "turn";
 
     // delegate and event
     public delegate void attackEnemy();
@@ -47,114 +50,124 @@ public class EllenController : MonoBehaviour
     void Start()
     {
         Chomper.onAttackPlayer += beginHitAnim;
+        Grenade.onAttackPlayer += beginHitAnim;
 
-        this.animator = GetComponent<Animator>();
-        this.facingRight = true;
-        this.attack = 0;
-        this.rb = GetComponent<Rigidbody>();
-        this.staff = GameObject.FindGameObjectWithTag("Staff");
-        this.staff.SetActive(false);
-        this.pistol = GameObject.FindGameObjectWithTag("Pistol");
-        this.pistol.SetActive(false);
-        this.health = 4;
-
-        this.horizontalInput = "Horizontal";
-        this.attackInput = "Attack";
-        this.jumpInput = "Jump";
-        this.shootInput = "Shoot";
-        this.jumpForceParam = "jumpForce";
-        this.runParam = "run";
-        this.attackParam = "attack";
-        this.shootParam = "shoot";
-        this.isShootingParam = "isShooting";
-        this.deathParam = "death";
-        this.hitParam = "hit";
+        animator = GetComponent<Animator>();
+        facingRight = true;
+        attack = 0;
+        rb = GetComponent<Rigidbody>();
+        staff = GameObject.FindGameObjectWithTag("Staff");
+        staff.SetActive(false);
+        pistol = GameObject.FindGameObjectWithTag("Pistol");
+        pistol.SetActive(false);
+        health = 4;
     }
 
     // Update is called once per frame
     void Update()
     {
-        this.horizontal = Input.GetAxis(this.horizontalInput);
-     
-        if(this.facingRight && Input.GetAxis(this.horizontalInput) < 0 || !this.facingRight && Input.GetAxis(this.horizontalInput) > 0 )
+        vertical = Input.GetAxis(verticalInput);
+        horizontal = Input.GetAxis(horizontalInput);
+
+        rotate();
+
+        //if (facingRight && Input.GetAxis(verticalInput) < 0 || !facingRight && Input.GetAxis(verticalInput) > 0)
+        //{
+        //    Vector3 rotate = new Vector3(gameObject.transform.localScale.x, gameObject.transform.localScale.y, gameObject.transform.localScale.z);
+        //    rotate.z = rotate.z * -1;
+        //    facingRight = !facingRight;
+        //    gameObject.transform.localScale = rotate;
+        //}
+        if (Input.GetButtonDown(verticalInput))
         {
-            Vector3 rotate = new Vector3(gameObject.transform.localScale.x, gameObject.transform.localScale.y, gameObject.transform.localScale.z);
-            rotate.z = rotate.z * -1;
-            this.facingRight = !this.facingRight;
-            gameObject.transform.localScale = rotate;
-        }
-        if(Input.GetButtonDown(this.horizontalInput))
-        {
-            this.attack = 0;
+            attack = 0;
         }
         
-        if(Input.GetButtonDown(this.attackInput))
+        if(Input.GetButtonDown(attackInput))
         {
-            this.attack++;
-            this.staff.SetActive(true);
+            attack++;
+            staff.SetActive(true);
         }
-        if(Input.GetButtonDown(this.jumpInput) && this.isGrounded )
+        if(Input.GetButtonDown(jumpInput) && isGrounded )
         {
-            this.attack = 0;
-            this.rb.AddForce(new Vector3(0, this.jumpForce, 0), ForceMode.Impulse);
+            attack = 0;
+            rb.AddForce(new Vector3(0, jumpForce, 0), ForceMode.Impulse);
         }
         if (Input.GetButtonDown("Shoot")) // reinit timer 
         {
-            this.shootTimer = 0f;
-                   
-            this.shoot++;
-            this.pistol.SetActive(true);
+            shootTimer = 0f;       
+            shoot++;
+            pistol.SetActive(true);
         }
-        this.shootTimer += Time.fixedDeltaTime;
-        if (this.shootTimer > 2.0f) // fin du shoot
+        shootTimer += Time.fixedDeltaTime;
+        if (shootTimer > 2.0f) // fin du shoot
         {
-            this.shoot = 0;
-            this.pistol.SetActive(false);
+            shoot = 0;
+            pistol.SetActive(false);
         }
 
-        this.animator.SetInteger(this.shootParam, this.shoot);
-        this.animator.SetBool(this.isShootingParam, Input.GetButtonDown("Shoot"));
-        this.animator.SetFloat(this.jumpForceParam, this.rb.velocity.y);
-        this.animator.SetInteger(this.attackParam, this.attack);
-        this.animator.SetFloat(this.runParam, Mathf.Abs(this.horizontal));
+        animator.SetInteger(shootParam, shoot);
+        animator.SetBool(isShootingParam, Input.GetButtonDown("Shoot"));
+        animator.SetFloat(jumpForceParam, rb.velocity.y);
+        animator.SetInteger(attackParam, attack);
+       
+        
+        if(Mathf.Abs(vertical) > 0 || Mathf.Abs(horizontal) > 0)
+        {
+            animator.SetBool(isRunningParam, true);
+            animator.SetFloat(runVerticalParam, vertical);
+            animator.SetFloat(runHorizontalParam, horizontal);
+        }
+        else animator.SetBool(isRunningParam, false);
+
     }
 
     private void endAttack()
     {
-        this.attack = 0;
-        this.staff.SetActive(false);
+        attack = 0;
+        staff.SetActive(false);
     }
 
     // hit annimation
     private void beginHitAnim()
     {
-        if(this.health > 0)
-            this.animator.SetBool(this.hitParam, true);
+        if(health > 0)
+            animator.SetBool(hitParam, true);
     }
     private void takeDammage()
     {
-        this.animator.SetBool(this.hitParam, false);
-        this.health = this.health - 1;
-        if(this.health <=0 )
+        animator.SetBool(hitParam, false);
+        health = health - 1;
+        if(health <=0 )
         {
-            this.animator.SetTrigger(this.deathParam);
+            animator.SetTrigger(deathParam);
             Chomper.onAttackPlayer -= takeDammage;
         }
     }
          
     private void instantiateBullet()
     {
-       Instantiate(this.bullet, this.pistol.transform.position, Quaternion.identity);
+     //   GameObject instantiateBullet =  Instantiate(bullet, pistol.transform.position, Quaternion.identity);
+     //   instantiateBullet.transform.rotation = transform.rotation;
     }
+
+    private void rotate()
+    {
+      //  Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+      //  transform.Rotate(new Vector3(0, Input.GetAxis("Mouse Y"), 0) * 20);
+    }
+
+
+    // collision & trigger funtion
 
     public void OnTriggerStay(Collider other)
     {
         if(attack > 0 && other.gameObject.tag == "Enemy")
         {
-            if (Input.GetButtonDown(this.attackInput))
+            if (Input.GetButtonDown(attackInput))
             {
                 onAttackEnemy?.Invoke();
-                this.staffParticle.GetComponentInChildren<ParticleSystem>().Play();
+                staffParticle.GetComponentInChildren<ParticleSystem>().Play();
             }
         } 
     }
@@ -163,7 +176,7 @@ public class EllenController : MonoBehaviour
     {
         if(collision.gameObject.layer == 8 && !isGrounded)
         {
-            this.isGrounded = true;
+            isGrounded = true;
         }
     }
 
@@ -171,7 +184,7 @@ public class EllenController : MonoBehaviour
     {
         if(collision.gameObject.layer == 8 && isGrounded)
         {
-            this.isGrounded = false;
+            isGrounded = false;
         }
     }
 }

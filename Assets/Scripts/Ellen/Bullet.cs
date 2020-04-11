@@ -6,28 +6,59 @@ public class Bullet : MonoBehaviour
 {
     public float speed;
 
+    public GameObject explostionParticle;
 
+    //event & delegate
     public delegate void hitEnemy();
     public static event hitEnemy onHitEnemy;
+
 
     // Start is called before the first frame update
     void Start()
     {
-        
     }
 
     // Update is called once per frame
     void Update()
     {
-        this.transform.Translate(new Vector3(1, 0, 0) * speed * Time.deltaTime);    
+        transform.position += transform.forward * Time.deltaTime * speed;
     }
 
-    private void OnTriggerEnter(Collider other)
+    //private void OnTriggerEnter(Collider other)
+    //{
+    //    if(other.gameObject.tag != "Player")
+    //    {
+    //        Debug.Log(other.gameObject.tag);
+    //        if (other.gameObject.tag == "Enemy")
+    //        {
+    //            onHitEnemy?.Invoke();
+
+    //        }
+
+    //        ContactPoint contact = other.contactOffset;
+    //        explostionParticle.GetComponentInChildren<ParticleSystem>().Play();
+    //        Destroy(gameObject);
+    //    }
+
+    //}
+
+    private void OnCollisionEnter(Collision collision)
     {
-        if (other.gameObject.tag == "Enemy")
+        if(collision.gameObject.tag != "Player")
         {
-            onHitEnemy?.Invoke();
-            Destroy(this.gameObject);
+            if(collision.gameObject.tag == "Enemy")
+            {
+                onHitEnemy?.Invoke();
+            }
+
+            foreach (ContactPoint contact in collision.contacts)
+            {
+                GameObject particle = Instantiate(explostionParticle);
+                particle.transform.position = contact.point;
+                particle.GetComponentInChildren<ParticleSystem>().Play();
+            }
+              
+            Destroy(gameObject);
         }
     }
 

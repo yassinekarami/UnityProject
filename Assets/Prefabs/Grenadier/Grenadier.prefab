@@ -1,5 +1,35 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &927224157771832257
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7074342331914455687}
+  m_Layer: 0
+  m_Name: GrenadeSpawn
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7074342331914455687
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 927224157771832257}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.41, y: 1.64, z: 1.73}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 8965205512925207657}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8965205512924708881
 GameObject:
   m_ObjectHideFlags: 0
@@ -200,9 +230,10 @@ GameObject:
   - component: {fileID: 8965205514239525119}
   - component: {fileID: 8965205514239525105}
   - component: {fileID: 8965205514239525104}
+  - component: {fileID: 711113231}
   m_Layer: 0
   m_Name: Grenadier
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -214,12 +245,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8965205512924708937}
-  m_LocalRotation: {x: -0, y: -0.78546625, z: -0, w: 0.61890453}
+  m_LocalRotation: {x: 0, y: -0.78546816, z: 0, w: 0.6189021}
   m_LocalPosition: {x: -0.98, y: 1.49, z: -9.36}
   m_LocalScale: {x: 0.45153, y: 0.45153, z: 0.45153}
   m_Children:
   - {fileID: 8965205512925208009}
   - {fileID: 8965205512925208011}
+  - {fileID: 7074342331914455687}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: -103.52801, z: 0}
@@ -284,6 +316,24 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 2.64
   m_Center: {x: 0, y: 2.34, z: 0}
+--- !u!114 &711113231
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8965205512924708937}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b516b2c4bf4c8434e8576d3b5469377c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  distance: 0
+  health: 0
+  spottedDistance: 12
+  attackDistance: 12
+  grenade: {fileID: 7999066637074886528, guid: fbf7c345c1b558a4c92c0de45660f12f, type: 3}
+  grenadeSpawn: {fileID: 927224157771832257}
 --- !u!1 &8965205512924709289
 GameObject:
   m_ObjectHideFlags: 0

@@ -6,7 +6,7 @@ public class BaseEnemy : MonoBehaviour
 {
 
     protected Animator animator;
-    GameObject player;
+    protected GameObject player;
     [SerializeField] protected float distance;
     [SerializeField] protected  int health;
 
