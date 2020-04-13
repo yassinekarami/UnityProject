@@ -8,6 +8,9 @@ public class Grenade : MonoBehaviour
     Vector3 target;
     public float explosionRadius;
 
+    // particle system to be emitted
+    public GameObject fireCirle;
+
     // Editor variables
     [Range(1.0f, 6.0f)] public float TargetRadius;
     [Range(20.0f, 75.0f)] public float LaunchAngle;
@@ -71,15 +74,29 @@ public class Grenade : MonoBehaviour
         Collider[] hitColliders = Physics.OverlapSphere(gameObject.transform.position, explosionRadius);
         for(int i=0;i<hitColliders.Length; i++)
         {
-            if(hitColliders[i].gameObject.tag == "Player")
+           
+            //si on touche le joueur on retranche les points de vie
+            if (hitColliders[i].gameObject.tag == "Player") 
             {
-                onAttackPlayer?.Invoke();
+                hitColliders[i].gameObject.GetComponent<EllenHealth>().takeDammage();
+            }
+            // dans tout les cas on déclanche une explosion
+      
+            if(hitColliders[i].gameObject.tag != "Untagged")
+            {
+                GameObject fire = Instantiate(fireCirle, hitColliders[i].transform.position, Quaternion.identity);
+                fire.GetComponent<ParticleSystem>().Play();
+                StartCoroutine(destroyParticle(fire));
             }
         }
-        if(other.gameObject.tag != "Enemy")
-        {
-            Destroy(gameObject);
-        }
+    }
+
+    IEnumerator destroyParticle(GameObject f)
+    {
+        float duration = f.GetComponent<ParticleSystem>().main.duration;
+        yield return new WaitForSeconds(duration + 3);
+        Destroy(f);
+   //     Destroy(gameObject);
     }
 
     private void OnDrawGizmos()

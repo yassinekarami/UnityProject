@@ -10,8 +10,6 @@ public class Grenadier : BaseEnemy
     public GameObject grenadeSpawn;
     public GameObject[] points;
 
-    NavMeshAgent agent;
-
     //delegate and event
     public delegate void attackPlayer();
     public static attackPlayer onAttackPlayer;
@@ -24,12 +22,11 @@ public class Grenadier : BaseEnemy
     public override void Start()
     {
         base.Start();
-        this.hitRandom = "hitRandom";
-        this.speed = "speed";
-        base.health = 5;
+        hitRandom = "hitRandom";
+        speed = "speed";
+        health = 5;
         points = GameObject.FindGameObjectsWithTag("Point");
-        agent = GetComponent<NavMeshAgent>();
-        player = GameObject.FindGameObjectWithTag("Player");
+     
     }
 
     // Update is called once per frame
@@ -38,16 +35,18 @@ public class Grenadier : BaseEnemy
         base.Update();
         if(!stopMoving())
         {
-            this.agent.isStopped = false;
-            if (isTargetReached())
+            agent.isStopped = false;
+            if (base.isTargetReached())
             {
                 setTarget(points);
-                base.animator.SetFloat(this.speed, agent.speed);
+                animator.SetFloat(speed, agent.speed);
             }
         }
         else
         {
-            this.agent.isStopped = true;
+            agent.isStopped = true;
+            Quaternion q = new Quaternion(player.transform.rotation.x, player.transform.rotation.y, player.transform.rotation.z, 0f);
+            transform.rotation = q;
         }
     }
 
@@ -57,30 +56,21 @@ public class Grenadier : BaseEnemy
         agent.SetDestination(destination.transform.position);
     }
 
-    private bool isTargetReached()
-    {
-        bool res = false;
-        if(agent.remainingDistance <=1)
-        {
-            res = true ;
-        }
-        return res;
-    }
 
     private bool stopMoving()
     {
         // return true si la distance est inférieur a 12 
         // return false si la distance est suppérieur
-        return Vector3.Distance(transform.position, base.player.transform.position) < 12;
+        return Vector3.Distance(transform.position, player.transform.position) < 12;
     }
 
     public override void setDammage()
     {
-        if (this.health > 0)
+        if (health > 0)
         {
-            base.animator.SetBool("hit", true);
-            base.animator.SetInteger("hitRandom", Random.Range(1, 4));
-            this.health -= 1;
+            animator.SetBool("hit", true);
+            animator.SetInteger("hitRandom", Random.Range(1, 4));
+            health -= 1;
         }
     }
 

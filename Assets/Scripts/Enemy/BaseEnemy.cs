@@ -1,15 +1,21 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
+[RequireComponent(typeof(NavMeshAgent))]
+[RequireComponent(typeof(Animator))]
 public class BaseEnemy : MonoBehaviour
 {
-
     protected Animator animator;
     protected GameObject player;
     [SerializeField] protected float distance;
     [SerializeField] protected  int health;
+    protected NavMeshAgent agent;
 
+
+    //string params
+    string distanceParam = "distance";
 
     // parameter for gizmo
     public float spottedDistance;
@@ -18,53 +24,64 @@ public class BaseEnemy : MonoBehaviour
     // Start is called before the first frame update
     public virtual void Start()
     {
-        // subscribtion to event
-        EllenController.onAttackEnemy += setDammage;
-        Bullet.onHitEnemy += setDammage;
+        agent = gameObject.GetComponent<NavMeshAgent>();
+        animator = GetComponent<Animator>();
+        player = GameObject.FindGameObjectWithTag("Player");
 
-        this.animator = GetComponent<Animator>();
-        this.player = GameObject.FindGameObjectWithTag("Player");
-        this.health = 2;
+        health = 2;
     }
 
     // Update is called once per frame
     public virtual void Update()
     {
-        this.distance = Vector3.Distance(transform.position, player.transform.position);
-        this.animator.SetFloat("distance", this.distance);
+        distance = Vector3.Distance(transform.position, player.transform.position);
+        animator.SetFloat(distanceParam, distance);
     }
 
     public virtual void setDammage()
     {
-        if(this.health > 0)
+        if(health > 0)
         {
-            this.animator.SetBool("hit", true);
-            this.health -= 1;
+            animator.SetBool("hit", true);
+            health -= 1;
         }
     }
 
     public virtual void endHitAnimation()
     {
-        if(this.health > 0)
+        if(health > 0)
         {
-            this.animator.SetBool("hit", false);
+            animator.SetBool("hit", false);
         }
-        if(this.health <= 0)
+        if(health <= 0)
         {
-            Destroy(this.gameObject);
+            Destroy(gameObject);
         }
     }
 
     public virtual void attack() { }
 
+
+    public virtual bool isTargetReached()
+    {
+        bool res = false;
+        if (agent.remainingDistance <= 1)
+        {
+            res = true;
+        }
+        return res;
+    }
+
+
+
     public virtual void OnDrawGizmos()
     {
         // spottedDistance
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, this.spottedDistance);
+        Gizmos.DrawWireSphere(transform.position, spottedDistance);
 
         // attackDistance 
         Gizmos.color = Color.blue;
-        Gizmos.DrawWireSphere(transform.position, this.attackDistance);
+        Gizmos.DrawWireSphere(transform.position, attackDistance);
     }
 }

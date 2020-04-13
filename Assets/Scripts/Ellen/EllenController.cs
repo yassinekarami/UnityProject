@@ -8,11 +8,13 @@ public class EllenController : MonoBehaviour
     Rigidbody rb;
     GameObject staff;
     GameObject pistol;
+    AudioSource audioSource;
+
+    public GameObject pistolBulletSpawn;
     public GameObject bullet;
     public GameObject staffParticle;
 
     public float jumpForce;
-    bool facingRight;
     float shootTimer;
     bool isGrounded;
 
@@ -20,7 +22,7 @@ public class EllenController : MonoBehaviour
     [SerializeField] int shoot;
     [SerializeField] float vertical;
     [SerializeField] float horizontal;
-    [SerializeField] int health;
+
 
     // strings for input
     string horizontalInput = "Horizontal";
@@ -37,9 +39,8 @@ public class EllenController : MonoBehaviour
     string attackParam = "attack";
     string shootParam = "shoot";
     string isShootingParam = "isShooting";
-    string deathParam = "death";
-    string hitParam = "hit";
-    string turnParam  = "turn";
+    
+    
 
     // delegate and event
     public delegate void attackEnemy();
@@ -49,18 +50,15 @@ public class EllenController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Chomper.onAttackPlayer += beginHitAnim;
-        Grenade.onAttackPlayer += beginHitAnim;
-
+        audioSource = GetComponent<AudioSource>();
         animator = GetComponent<Animator>();
-        facingRight = true;
         attack = 0;
         rb = GetComponent<Rigidbody>();
         staff = GameObject.FindGameObjectWithTag("Staff");
         staff.SetActive(false);
         pistol = GameObject.FindGameObjectWithTag("Pistol");
         pistol.SetActive(false);
-        health = 4;
+        
     }
 
     // Update is called once per frame
@@ -71,13 +69,6 @@ public class EllenController : MonoBehaviour
 
         rotate();
 
-        //if (facingRight && Input.GetAxis(verticalInput) < 0 || !facingRight && Input.GetAxis(verticalInput) > 0)
-        //{
-        //    Vector3 rotate = new Vector3(gameObject.transform.localScale.x, gameObject.transform.localScale.y, gameObject.transform.localScale.z);
-        //    rotate.z = rotate.z * -1;
-        //    facingRight = !facingRight;
-        //    gameObject.transform.localScale = rotate;
-        //}
         if (Input.GetButtonDown(verticalInput))
         {
             attack = 0;
@@ -93,14 +84,18 @@ public class EllenController : MonoBehaviour
             attack = 0;
             rb.AddForce(new Vector3(0, jumpForce, 0), ForceMode.Impulse);
         }
-        if (Input.GetButtonDown("Shoot")) // reinit timer 
+
+        // reinit timer 
+        if (Input.GetButtonDown("Shoot"))
         {
             shootTimer = 0f;       
             shoot++;
             pistol.SetActive(true);
         }
+
+        // fin du shoot
         shootTimer += Time.fixedDeltaTime;
-        if (shootTimer > 2.0f) // fin du shoot
+        if (shootTimer > 1.0f) 
         {
             shoot = 0;
             pistol.SetActive(false);
@@ -110,51 +105,45 @@ public class EllenController : MonoBehaviour
         animator.SetBool(isShootingParam, Input.GetButtonDown("Shoot"));
         animator.SetFloat(jumpForceParam, rb.velocity.y);
         animator.SetInteger(attackParam, attack);
-       
-        
-        if(Mathf.Abs(vertical) > 0 || Mathf.Abs(horizontal) > 0)
+
+
+        if (Mathf.Abs(vertical) > 0 || Mathf.Abs(horizontal) > 0)
         {
+           
             animator.SetBool(isRunningParam, true);
             animator.SetFloat(runVerticalParam, vertical);
             animator.SetFloat(runHorizontalParam, horizontal);
         }
-        else animator.SetBool(isRunningParam, false);
+        else
+        {
+            audioSource.Stop();
+            animator.SetBool(isRunningParam, false);
+        }
 
     }
 
+  
+    private void startFootstep()
+    {
+        audioSource.PlayOneShot(audioSource.clip);
+    }
+   
     private void endAttack()
     {
         attack = 0;
         staff.SetActive(false);
     }
-
-    // hit annimation
-    private void beginHitAnim()
-    {
-        if(health > 0)
-            animator.SetBool(hitParam, true);
-    }
-    private void takeDammage()
-    {
-        animator.SetBool(hitParam, false);
-        health = health - 1;
-        if(health <=0 )
-        {
-            animator.SetTrigger(deathParam);
-            Chomper.onAttackPlayer -= takeDammage;
-        }
-    }
          
     private void instantiateBullet()
     {
-     //   GameObject instantiateBullet =  Instantiate(bullet, pistol.transform.position, Quaternion.identity);
-     //   instantiateBullet.transform.rotation = transform.rotation;
+        GameObject instantiateBullet =  Instantiate(bullet, pistolBulletSpawn.transform.position, Quaternion.identity);
+        instantiateBullet.transform.rotation = transform.rotation;
     }
 
     private void rotate()
     {
-      //  Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-      //  transform.Rotate(new Vector3(0, Input.GetAxis("Mouse Y"), 0) * 20);
+        Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+        transform.Rotate(new Vector3(0, Input.GetAxis("Mouse Y"), 0) * 5);
     }
 
 
@@ -162,12 +151,13 @@ public class EllenController : MonoBehaviour
 
     public void OnTriggerStay(Collider other)
     {
-        if(attack > 0 && other.gameObject.tag == "Enemy")
+       
+        if (attack > 0 && other.gameObject.tag == "Enemy")
         {
             if (Input.GetButtonDown(attackInput))
             {
-                onAttackEnemy?.Invoke();
-                staffParticle.GetComponentInChildren<ParticleSystem>().Play();
+                other.gameObject.GetComponent<BaseEnemy>().setDammage();
+                staffParticle.GetComponentInChildren<ParticleSystem>().Play();     
             }
         } 
     }
