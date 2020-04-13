@@ -3755,6 +3755,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 0
+  healthBar: {fileID: 0}
+  pistolBar: {fileID: 0}
 --- !u!82 &3107207191244483390
 AudioSource:
   m_ObjectHideFlags: 0

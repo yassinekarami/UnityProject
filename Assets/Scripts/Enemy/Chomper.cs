@@ -45,7 +45,7 @@ public class Chomper : BaseEnemy
         {
             if(obj.gameObject.tag == "Player")
             {
-                obj.gameObject.GetComponent<EllenHealth>().takeDammage();
+                obj.gameObject.GetComponent<EllenUI>().takeDammage();
             }
         }
     }

@@ -86,7 +86,7 @@ public class EllenController : MonoBehaviour
         }
 
         // reinit timer 
-        if (Input.GetButtonDown("Shoot"))
+        if (Input.GetButtonDown("Shoot") && gameObject.GetComponent<EllenUI>().canShoot())
         {
             shootTimer = 0f;       
             shoot++;
@@ -119,7 +119,6 @@ public class EllenController : MonoBehaviour
             audioSource.Stop();
             animator.SetBool(isRunningParam, false);
         }
-
     }
 
   
@@ -136,6 +135,7 @@ public class EllenController : MonoBehaviour
          
     private void instantiateBullet()
     {
+        gameObject.GetComponent<EllenUI>().updateShootBar();
         GameObject instantiateBullet =  Instantiate(bullet, pistolBulletSpawn.transform.position, Quaternion.identity);
         instantiateBullet.transform.rotation = transform.rotation;
     }

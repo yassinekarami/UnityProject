@@ -1,11 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-public class EllenHealth : MonoBehaviour
+using UnityEngine.UI;
+public class EllenUI : MonoBehaviour
 {
-    [SerializeField] int health;
+    [SerializeField] float health;
+    [SerializeField] float shoot;
+
     Animator animator;
+    public GameObject healthBar;
+    public GameObject shootBar;
 
     // strings for params
     string hitParam = "hit";
@@ -15,7 +19,8 @@ public class EllenHealth : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        health = 4;
+        health = healthBar.GetComponent<Image>().fillAmount * 100;
+        shoot = shootBar.GetComponent<Image>().fillAmount * 100;     
     }
 
     // Update is called once per frame
@@ -34,10 +39,21 @@ public class EllenHealth : MonoBehaviour
     public void takeDammage()
     {
         animator.SetBool(hitParam, false);
-        health = health - 1;
+        health = health - 10;
+        healthBar.GetComponent<Image>().fillAmount = health / 100;
         if (health <= 0)
         {
             animator.SetTrigger(deathParam);
         }
+    }
+    public void updateShootBar()
+    {
+        shoot = shoot - 10;
+        shootBar.GetComponent<Image>().fillAmount = shoot / 100;
+
+    }
+    public bool canShoot()
+    {
+        return shootBar.GetComponent<Image>().fillAmount >0 ? true:false;
     }
 }

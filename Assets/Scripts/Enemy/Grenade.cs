@@ -78,7 +78,7 @@ public class Grenade : MonoBehaviour
             //si on touche le joueur on retranche les points de vie
             if (hitColliders[i].gameObject.tag == "Player") 
             {
-                hitColliders[i].gameObject.GetComponent<EllenHealth>().takeDammage();
+                hitColliders[i].gameObject.GetComponent<EllenUI>().takeDammage();
             }
             // dans tout les cas on déclanche une explosion
       
