@@ -22,9 +22,9 @@ TagManager:
   - 
   - 
   - Ground
-  - 
-  - 
-  - 
+  - Enemy
+  - HealthPickup
+  - PistolPickup
   - 
   - 
   - 

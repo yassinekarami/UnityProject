@@ -3635,6 +3635,7 @@ GameObject:
   - component: {fileID: 1279005530}
   - component: {fileID: 9034681236374062489}
   - component: {fileID: 3107207191244483390}
+  - component: {fileID: 1776392180}
   m_Layer: 0
   m_Name: Ellen
   m_TagString: Player
@@ -3673,7 +3674,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: f4c4c772229587f4ca08b8798dde8ebd, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
-  m_ApplyRootMotion: 1
+  m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
@@ -3755,8 +3756,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 0
+  shoot: 0
   healthBar: {fileID: 0}
-  pistolBar: {fileID: 0}
+  shootBar: {fileID: 0}
 --- !u!82 &3107207191244483390
 AudioSource:
   m_ObjectHideFlags: 0
@@ -3853,6 +3855,28 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!195 &1776392180
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 508541394117558077}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 7.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 5000
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 2
+  m_BaseOffset: 0
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
 --- !u!1 &5840141492962146509
 GameObject:
   m_ObjectHideFlags: 0
