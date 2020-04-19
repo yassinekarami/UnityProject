@@ -12,6 +12,7 @@ TagManager:
   - StaffParticle
   - Point
   - BulletSpawn
+  - Chomper
   layers:
   - Default
   - TransparentFX

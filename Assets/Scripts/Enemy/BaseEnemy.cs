@@ -15,7 +15,7 @@ namespace Enemy
         protected GameObject player;
         [SerializeField] protected float distance;
         [SerializeField] protected int health;
-        protected NavMeshAgent agent;
+        public NavMeshAgent agent;
         
         protected Slider healthSlider;
 

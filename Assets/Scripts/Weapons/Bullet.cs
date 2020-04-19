@@ -50,9 +50,9 @@ namespace Weapon.player
         {
             if (collision.gameObject.tag != "Player")
             {
-                if (collision.gameObject.tag == "Enemy")
+                BaseEnemy enemy = collision.gameObject.GetComponent<BaseEnemy>();
+                if (enemy != null)
                 {
-
                     collision.gameObject.GetComponent<BaseEnemy>().setDammage();
                 }
 

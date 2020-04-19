@@ -16,7 +16,7 @@ namespace Ellen.controller
    
 
         AudioSource audioSource;
-        NavMeshAgent agent;
+        public NavMeshAgent agent;
         RaycastHit[] hits; // raycast for movement
         RaycastHit hit; // raycast for shoot
         Ray ray;
@@ -30,8 +30,6 @@ namespace Ellen.controller
         float attackDelay = 0.9f;
         float lastClickedTimeShoot;
         float shootDelay = 1.0f;
-
-
     
         [SerializeField] int hitLayer;
 
@@ -61,6 +59,7 @@ namespace Ellen.controller
         // Update is called once per frame
         void Update()
         {
+
             animator.SetFloat(speedParam, Mathf.Abs(agent.velocity.z));
 
             // combot time

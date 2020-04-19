@@ -12,7 +12,6 @@ namespace Enemy
         // et quand il y arrive qui récupère sa nouvelle position
 
         List<GameObject> closeObject = new List<GameObject>();
-
         Vector3 target;
 
         //string params
@@ -27,33 +26,26 @@ namespace Enemy
         {
             base.Start();
             target = player.transform.position;
+            agent.SetDestination(target);
+        
         }
 
         // Update is called once per frame
         public override void Update()
         {
-            animator.SetFloat(distanceParam, agent.remainingDistance);
-            agent.SetDestination(target);
- 
             animator.SetInteger(closeObjParam, closeObject.Count);
-            if (base.isTargetReached())
+            agent.SetDestination(target);
+            if (agent.remainingDistance >=1)
             {
+               
+                animator.SetFloat("distance", agent.remainingDistance);
+            } 
+            else if(agent.remainingDistance < 1)
+            {
+                target = player.transform.position;
                 animator.SetBool(cooldownParam, true);
             }
-           
-            //if (target != null)
-            //{
-            //    agent.SetDestination(target);
-            //    distance = Vector3.Distance(transform.position, target);
-            //    animator.SetFloat("distance", distance);
-            //    animator.SetInteger(closestObjParam, closeObject.Count);
-           
-
-            //    if (base.isTargetReached())
-            //    {
-            //        StartCoroutine(stopMovement());
-            //    }
-            //}
+            
         }
 
         public override void attack()
@@ -84,12 +76,9 @@ namespace Enemy
 
         public void endCooldown()
         {
-            target = player.transform.position;
-            animator.SetBool(cooldownParam, false);
-            animator.SetFloat("distance", agent.remainingDistance);
-            transform.LookAt(target);
-            agent.SetDestination(target);
-           
+             animator.SetBool("cooldown", false);
         }
+
+       
     }
 }
