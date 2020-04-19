@@ -5,41 +5,38 @@ using UnityEngine.AI;
 
 using Ellen.UI;
 using Enemy;
-using Weapon.player;
+using Ellen.attack;
+
 namespace Ellen.controller
 {
     public class PlayerController : MonoBehaviour
     {
         Animator animator;
         Rigidbody rb;
-        GameObject staff;
-        GameObject pistol;
+   
+
         AudioSource audioSource;
         NavMeshAgent agent;
-        RaycastHit hit;
+        RaycastHit[] hits; // raycast for movement
+        RaycastHit hit; // raycast for shoot
         Ray ray;
 
-
-        public GameObject pistolBulletSpawn;
-        public GameObject bullet;
         public GameObject staffParticle;
 
         public float jumpForce;
-        float shootTimer;
-        bool isRayHit;
+      
+        bool  isRayHit;
         float lastClickedTime;
         float attackDelay = 0.9f;
+        float lastClickedTimeShoot;
+        float shootDelay = 1.0f;
 
-        [SerializeField] int attack;
-        [SerializeField] int shoot;
+
+    
         [SerializeField] int hitLayer;
 
-
-
         // strings for input
-
         string attackInput = "Attack";
-        string shootInput = "Shoot";
 
         // strings for params
         string jumpForceParam = "jumpForce";
@@ -48,12 +45,8 @@ namespace Ellen.controller
         string attackParam = "attack";
         string shootParam = "shoot";
         string isShootingParam = "isShooting";
-
-
-
-        // delegate and event
-        public delegate void attackEnemy();
-        public static event attackEnemy onAttackEnemy;
+        string hitParam = "hit";
+        string deathParam = "death";
 
 
         // Start is called before the first frame update
@@ -62,13 +55,7 @@ namespace Ellen.controller
             agent = GetComponent<NavMeshAgent>();
             audioSource = GetComponent<AudioSource>();
             animator = GetComponent<Animator>();
-            attack = 0;
             rb = GetComponent<Rigidbody>();
-            staff = GameObject.FindGameObjectWithTag("Staff");
-            staff.SetActive(false);
-            pistol = GameObject.FindGameObjectWithTag("Pistol");
-            pistol.SetActive(false);
-
         }
 
         // Update is called once per frame
@@ -76,61 +63,61 @@ namespace Ellen.controller
         {
             animator.SetFloat(speedParam, Mathf.Abs(agent.velocity.z));
 
+            // combot time
             if (Time.time - lastClickedTime > attackDelay)
             {
-                attack = 0;
+                GetComponent<PlayerAttackStaff>().endAttack();
             }
-
 
             ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            isRayHit = Physics.Raycast(ray, out hit, 500);
-
-            if (Input.GetMouseButtonDown(0) && isRayHit)
+            Physics.Raycast(ray, out hit, 500);
+            hits = Physics.RaycastAll(ray.origin, ray.direction, 500);
+            if (Input.GetMouseButtonDown(0) && hits != null)
             {
-                hitLayer = hit.transform.gameObject.layer;
-                if (hitLayer != 9)
-                {
-                    agent.SetDestination(hit.point);
+                foreach(RaycastHit hit in hits) {
+
+                    hitLayer = hit.transform.gameObject.layer;
+                    switch (hitLayer)
+                    {
+                        case 9: // Enemy layer ==> 9
+
+                            lastClickedTime = Time.time;
+                            //staff.SetActive(true);
+                            //attack++;
+                            GetComponent<PlayerAttackStaff>().beginAttack();
+                            break;
+
+                        case 8: // Ground layer ==> 8
+                            agent.SetDestination(hit.point);
+                            break;
+
+                        default:
+
+                            break;
+                    }
                 }
-                //switch(hitLayer)
-                //{
-                //    case 9: // Enemy layer ==> 9
-                //        attack++;
-                //        lastClickedTime = Time.time;
-                //        staff.SetActive(true);
-                //        break;
-
-                //    case 8: // Ground layer ==> 8
-                //        agent.SetDestination(hit.point);
-                //        break;
-
-                //    default:
-                //        Debug.Log("Other");
-                //        break;
-                //}
             }
 
-            // reinit timer 
             if (Input.GetMouseButtonDown(1) && gameObject.GetComponent<PlayerInterface>().canShoot())
             {
-                shootTimer = 0f;
-                shoot++;
-                pistol.SetActive(true);
-                agent.SetDestination(transform.position);
+                GetComponent<PlayerAttackPistol>().beginShoot();
+                lastClickedTimeShoot = Time.time;
+                agent.isStopped = true;
+
             }
 
             // fin du shoot
-            shootTimer += Time.fixedDeltaTime;
-            if (shootTimer > 1.0f)
+            if (Time.time - lastClickedTimeShoot > shootDelay)
             {
-                shoot = 0;
-                pistol.SetActive(false);
+                GetComponent<PlayerAttackPistol>().endShoot();
+                agent.isStopped = false;
             }
+            
 
-            animator.SetInteger(shootParam, shoot);
+            animator.SetInteger(shootParam, GetComponent<PlayerAttackPistol>().getShoot());
             animator.SetBool(isShootingParam, Input.GetMouseButtonDown(1));
             animator.SetFloat(jumpForceParam, rb.velocity.y);
-            animator.SetInteger(attackParam, attack);
+            animator.SetInteger(attackParam, GetComponent<PlayerAttackStaff>().getAttack());
 
 
             if (Mathf.Abs(agent.velocity.z) > 0)
@@ -149,10 +136,21 @@ namespace Ellen.controller
             audioSource.PlayOneShot(audioSource.clip);
         }
 
-        private void endAttack()
+        public void takeDammage(int value)
         {
-            attack = 0;
-            staff.SetActive(false);
+            if (GetComponent<PlayerInterface>().health > 0)
+            {
+                GetComponent<PlayerInterface>().updateHealth(value);
+                animator.SetBool(hitParam, true);
+            }
+            if (GetComponent<PlayerInterface>().health <= 0)
+            {
+                animator.SetTrigger(deathParam);
+            }
+        }
+        public void endHitAnimation()
+        {
+            animator.SetBool(hitParam, false);
         }
 
         private void instantiateBullet()
@@ -160,10 +158,7 @@ namespace Ellen.controller
             Vector3 rotation = transform.position - hit.collider.transform.position;
             transform.LookAt(hit.point);
             gameObject.GetComponent<PlayerInterface>().updateShootBar(-10);
-            GameObject instantiateBullet = Instantiate(bullet, pistolBulletSpawn.transform.position, Quaternion.identity);
-            Vector3 target = new Vector3(hit.point.x, pistolBulletSpawn.transform.position.y, hit.point.z);
-            instantiateBullet.GetComponent<Bullet>().setTarget(target);
-
+            GetComponent<PlayerAttackPistol>().instantiateShoot(hit.point);
         }
 
         private void moveCharacter()
@@ -183,16 +178,34 @@ namespace Ellen.controller
 
         public void OnTriggerStay(Collider other)
         {
-
-            if (attack > 0 && other.gameObject.tag == "Enemy")
+            if (GetComponent<PlayerAttackStaff>().getAttack() > 0 && other.gameObject.tag == "Enemy")
             {
                 if (Input.GetButtonDown(attackInput))
                 {
-                    other.gameObject.GetComponent<BaseEnemy>().setDammage();
+                    BaseEnemy baseEnemy = other.gameObject.GetComponent<BaseEnemy>();
+                    if (baseEnemy == null) return;
+                    baseEnemy.setDammage();
                     staffParticle.GetComponentInChildren<ParticleSystem>().Play();
                 }
             }
         }
+
+        private void OnTriggerEnter(Collider other)
+        {
+            switch (other.gameObject.layer)
+            {
+                case 10:  // Health layer ==> 9
+                    GetComponent<PlayerInterface>().updateHealth(20);
+                    Destroy(other.gameObject);
+                    break;
+                case 11: // Pistol layer ==> 9
+                    GetComponent<PlayerInterface>().updateShootBar(20);
+                    Destroy(other.gameObject);
+                    break;
+            }
+        }
+
+       
 
     }
 }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-using Ellen.UI;
+using Ellen.controller;
 namespace Enemy
 {
     public class Chomper : BaseEnemy
@@ -15,6 +15,11 @@ namespace Enemy
 
         Vector3 target;
 
+        //string params
+        string closestObjParam = "closestObj";
+        string cooldownParam = "cooldown";
+        string closeObjParam = "closeObj";
+
         //strings for parameter
 
         // Start is called before the first frame update
@@ -22,33 +27,42 @@ namespace Enemy
         {
             base.Start();
             target = player.transform.position;
-
         }
 
         // Update is called once per frame
         public override void Update()
         {
-            distance = Vector3.Distance(transform.position, target);
-            animator.SetFloat("distance", distance);
-
-            if (target != null)
+            animator.SetFloat(distanceParam, agent.remainingDistance);
+            agent.SetDestination(target);
+ 
+            animator.SetInteger(closeObjParam, closeObject.Count);
+            if (base.isTargetReached())
             {
-                agent.SetDestination(target);
-
-                if (base.isTargetReached())
-                {
-                    StartCoroutine(stopMovement());
-                }
+                animator.SetBool(cooldownParam, true);
             }
+           
+            //if (target != null)
+            //{
+            //    agent.SetDestination(target);
+            //    distance = Vector3.Distance(transform.position, target);
+            //    animator.SetFloat("distance", distance);
+            //    animator.SetInteger(closestObjParam, closeObject.Count);
+           
+
+            //    if (base.isTargetReached())
+            //    {
+            //        StartCoroutine(stopMovement());
+            //    }
+            //}
         }
 
         public override void attack()
         {
-            foreach (GameObject obj in closeObject)
+            if(closeObject != null)
             {
-                if (obj.gameObject.tag == "Player")
+                foreach (GameObject obj in closeObject)
                 {
-                    obj.gameObject.GetComponent<PlayerInterface>().updateHealth(-10);
+                    obj.GetComponent<PlayerController>().takeDammage(-10);
                 }
             }
         }
@@ -56,18 +70,26 @@ namespace Enemy
 
         private void OnTriggerEnter(Collider other)
         {
-            closeObject.Add(other.gameObject);
+            if (other.gameObject.tag == "Player")
+            {
+                closeObject.Add(other.gameObject);
+            }
+               
         }
 
         private void OnTriggerExit(Collider other)
         {
             closeObject.Remove(other.gameObject);
         }
-        IEnumerator stopMovement()
+
+        public void endCooldown()
         {
-            agent.SetDestination(gameObject.transform.position);
-            yield return new WaitForSeconds(5);
             target = player.transform.position;
+            animator.SetBool(cooldownParam, false);
+            animator.SetFloat("distance", agent.remainingDistance);
+            transform.LookAt(target);
+            agent.SetDestination(target);
+           
         }
     }
 }

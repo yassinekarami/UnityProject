@@ -110,10 +110,6 @@ MonoBehaviour:
   explosionRadius: 1.5
   fireCirle: {fileID: 2177780402896470456, guid: ae870fe032e014a44911b0e94c9bc718,
     type: 3}
-  TargetRadius: 6
-  LaunchAngle: 70
-  TargetHeightOffsetFromGround: 8.55
-  RandomizeHeightOffset: 1
 --- !u!54 &8724673849023887440
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -124,7 +120,7 @@ Rigidbody:
   serializedVersion: 2
   m_Mass: 1
   m_Drag: 18.15
-  m_AngularDrag: 0.5
+  m_AngularDrag: 4.32
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0

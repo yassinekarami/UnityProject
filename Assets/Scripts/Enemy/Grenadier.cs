@@ -18,17 +18,16 @@ namespace Enemy
         public static attackPlayer onAttackPlayer;
 
         // strings for params
-        string hitRandom;
-        string speed;
+        string hitRandom = "hitRandom";
+        string speed = "speed";
 
         // Start is called before the first frame update
         public override void Start()
         {
-            base.Start();
-            hitRandom = "hitRandom";
-            speed = "speed";
+           
             health = 5;
             points = GameObject.FindGameObjectsWithTag("Point");
+            base.Start();
 
         }
 
@@ -69,12 +68,9 @@ namespace Enemy
 
         public override void setDammage()
         {
-            if (health > 0)
-            {
-                animator.SetBool("hit", true);
-                animator.SetInteger("hitRandom", Random.Range(1, 4));
-                health -= 1;
-            }
+            base.setDammage();
+            if(health > 0)
+                animator.SetInteger(hitRandom, Random.Range(1, 4));
         }
 
         public override void endHitAnimation()
@@ -83,7 +79,8 @@ namespace Enemy
         }
         public override void attack()
         {
-            Instantiate(grenade, grenadeSpawn.transform.position, Quaternion.identity);
+            transform.rotation = Quaternion.LookRotation(player.transform.position);
+            Instantiate(grenade, grenadeSpawn.transform.position, Quaternion.identity);    
         }
     }
 }

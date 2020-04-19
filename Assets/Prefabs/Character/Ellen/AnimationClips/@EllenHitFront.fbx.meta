@@ -752,15 +752,8 @@ ModelImporter:
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events:
-      - time: 0.012658228
-        functionName: beginHitAnim
-        data: 
-        objectReferenceParameter: {instanceID: 0}
-        floatParameter: 0
-        intParameter: 0
-        messageOptions: 0
-      - time: 0.099737555
-        functionName: takeDammage
+      - time: 0.88536584
+        functionName: endHitAnimation
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0

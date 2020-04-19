@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Ellen.UI;
+using Ellen.controller;
 namespace Weapon.enemy
 {
     public class Grenade : MonoBehaviour
@@ -9,17 +9,10 @@ namespace Weapon.enemy
         GameObject player;
         Vector3 target;
         public float explosionRadius;
-
         // particle system to be emitted
         public GameObject fireCirle;
 
-        // Editor variables
-        [Range(1.0f, 6.0f)] public float TargetRadius;
-        [Range(20.0f, 75.0f)] public float LaunchAngle;
-        [Range(0.0f, 10.0f)] public float TargetHeightOffsetFromGround;
-        public bool RandomizeHeightOffset;
-
-        private Rigidbody rigid;
+        private Rigidbody rb;
         private Vector3 initialPosition;
         private Quaternion initialRotation;
 
@@ -31,7 +24,7 @@ namespace Weapon.enemy
         {
             player = GameObject.FindGameObjectWithTag("Player");
             target = player.transform.position;
-            rigid = GetComponent<Rigidbody>();
+            rb = GetComponent<Rigidbody>();
             initialPosition = transform.position;
             initialRotation = transform.rotation;
         }
@@ -39,66 +32,69 @@ namespace Weapon.enemy
         // Update is called once per frame
         void Update()
         {
-            Launch();
+            launchProjectile();
         }
 
-        private void Launch()
+        private void launchProjectile()
         {
-            // think of it as top-down view of vectors: 
-            //   we don't care about the y-component(height) of the initial and target position.
-            Vector3 projectileXZPos = new Vector3(transform.position.x, 0.0f, transform.position.z);
-            Vector3 targetXZPos = new Vector3(target.x, 0.0f, target.z);
-
-            // rotate the object to face the target
-            transform.LookAt(targetXZPos);
-
-            // shorthands for the formula
-            float R = Vector3.Distance(projectileXZPos, targetXZPos);
-            float G = Physics.gravity.y;
-            float tanAlpha = Mathf.Tan(LaunchAngle * Mathf.Deg2Rad);
-            float H = target.y - target.y;
-
-            // calculate the local space components of the velocity 
-            // required to land the projectile on the target object 
-            float Vz = Mathf.Sqrt(G * R * R / (2.0f * (H - R * tanAlpha)));
-            float Vy = tanAlpha * Vz;
-
-            // create the velocity vector in local space and get it in global space
-            Vector3 localVelocity = new Vector3(0f, Vy, Vz);
-            Vector3 globalVelocity = transform.TransformDirection(localVelocity);
-
-            // launch the object by setting its initial velocity and flipping its state
-            rigid.velocity = globalVelocity;
+            Vector3 vo = calculateVelocity(target, transform.position, 0.3f);
+            rb.velocity = vo;
         }
+
+
+        private Vector3 calculateVelocity(Vector3 target, Vector3 origin, float time)
+        {
+            // define the distance x and y first
+            Vector3 distance = target - origin;
+            Vector3 distanceXZ = distance;
+            distanceXZ.y = 0f;
+
+
+            //create a float the represent our distance
+            float sy = distance.y;
+            float sxz = distance.magnitude;
+
+            float vxz = sxz / time;
+            float vy = sy / time + 0.5f * Mathf.Abs(Physics.gravity.y) * time;
+
+            Vector3 result = distanceXZ.normalized;
+            result *= vxz;
+            result.y = vy;
+
+
+            return result;
+        }
+
 
         private void OnTriggerEnter(Collider other)
         {
-            Collider[] hitColliders = Physics.OverlapSphere(gameObject.transform.position, explosionRadius);
+        
+            Collider[] hitColliders = Physics.OverlapSphere(other.transform.position, explosionRadius);
             for (int i = 0; i < hitColliders.Length; i++)
             {
-
-                //si on touche le joueur on retranche les points de vie
                 if (hitColliders[i].gameObject.tag == "Player")
                 {
-                    hitColliders[i].gameObject.GetComponent<PlayerInterface>().updateHealth(-10);
+                    //PlayerController player = hitColliders[i].gameObject.GetComponent<PlayerController>();
+                    //player.takeDammage(-10);
+                    hitColliders[i].gameObject.GetComponent<PlayerController>().takeDammage(-10);
+                    Destroy(gameObject);
                 }
-                // dans tout les cas on déclanche une explosion
-
-                if (hitColliders[i].gameObject.tag != "Untagged")
-                {
-                    GameObject fire = Instantiate(fireCirle, hitColliders[i].transform.position, Quaternion.identity);
-                    fire.GetComponent<ParticleSystem>().Play();
-                    StartCoroutine(destroyParticle(fire));
-                }
+               
+                //GameObject fire = Instantiate(fireCirle, player.gameObject.transform.position, Quaternion.identity);
+                //fire.GetComponent<ParticleSystem>().Play();
+                //StartCoroutine(destroyParticle(fire));
             }
         }
+
+
 
         IEnumerator destroyParticle(GameObject f)
         {
             float duration = f.GetComponent<ParticleSystem>().main.duration;
-            yield return new WaitForSeconds(duration + 3);
+            yield return new WaitForSeconds(duration + 1);
             Destroy(f);
-            //     Destroy(gameObject);
+            yield return new WaitForSeconds(duration + 3);
+            Destroy(gameObject);
         }
 
         private void OnDrawGizmos()

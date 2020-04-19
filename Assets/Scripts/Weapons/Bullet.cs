@@ -62,6 +62,7 @@ namespace Weapon.player
                     particle.transform.position = contact.point;
                     particle.GetComponentInChildren<ParticleSystem>().Play();
                     StartCoroutine(destroyParticle(particle));
+                    Destroy(gameObject);
                 }
             }
         }
@@ -82,7 +83,7 @@ namespace Weapon.player
 
             yield return new WaitForSeconds(duration + 1);
             Destroy(p);
-            Destroy(gameObject);
+          
         }
 
     }

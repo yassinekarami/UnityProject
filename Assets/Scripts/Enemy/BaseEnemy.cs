@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.AI;
 
 namespace Enemy
@@ -15,10 +16,12 @@ namespace Enemy
         [SerializeField] protected float distance;
         [SerializeField] protected int health;
         protected NavMeshAgent agent;
+        
+        protected Slider healthSlider;
 
 
         //string params
-        string distanceParam = "distance";
+        protected string distanceParam = "distance";
 
         // parameter for gizmo
         public float spottedDistance;
@@ -27,11 +30,13 @@ namespace Enemy
         // Start is called before the first frame update
         public virtual void Start()
         {
+        
             agent = gameObject.GetComponent<NavMeshAgent>();
             animator = GetComponent<Animator>();
             player = GameObject.FindGameObjectWithTag("Player");
 
-            health = 2;
+            healthSlider = GetComponentInChildren<Slider>();
+            healthSlider.maxValue = health;
         }
 
         // Update is called once per frame
@@ -47,6 +52,8 @@ namespace Enemy
             {
                 animator.SetBool("hit", true);
                 health -= 1;
+                healthSlider.value = health;
+            
             }
         }
 

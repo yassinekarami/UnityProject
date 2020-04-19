@@ -7,17 +7,12 @@ namespace Ellen.UI
 {
     public class PlayerInterface : MonoBehaviour
     {
-        [SerializeField] float health;
-        [SerializeField] float shoot;
+        public float health;
+        public float shoot;
 
-        Animator animator;
         public GameObject healthBar;
         public GameObject shootBar;
-
-        // strings for params
-        string hitParam = "hit";
-        string deathParam = "death";
-
+       
 
         // Start is called before the first frame update
         void Start()
@@ -29,29 +24,15 @@ namespace Ellen.UI
         // Update is called once per frame
         void Update()
         {
-            animator = GetComponent<Animator>();
+        
         }
-
-
-        // hit annimation
-        private void beginHitAnim()
-        {
-            if (health > 0)
-                animator.SetBool(hitParam, true);
-        }
+        
         public void updateHealth(float value)
         {
-            animator.SetBool(hitParam, false);
             health = health + value;
-
             healthBar.GetComponent<Image>().fillAmount = health / 100;
             Mathf.Clamp(healthBar.GetComponent<Image>().fillAmount, 0, 100);
-            if (health <= 0)
-            {
-                animator.SetTrigger(deathParam);
-            }
-
-
+           
         }
         public void updateShootBar(float value)
         {
@@ -63,22 +44,6 @@ namespace Ellen.UI
         public bool canShoot()
         {
             return shootBar.GetComponent<Image>().fillAmount > 0 ? true : false;
-        }
-
-        private void OnTriggerEnter(Collider other)
-        {
-            switch (other.gameObject.layer)
-            {
-                case 10:  // Health layer ==> 9
-                    updateHealth(20);
-                    Destroy(other.gameObject);
-                    break;
-                case 11: // Pistol layer ==> 9
-                    updateShootBar(20);
-                    Destroy(other.gameObject);
-                    break;
-
-            }
         }
     }
 
