@@ -30,7 +30,6 @@ namespace Enemy
         // Start is called before the first frame update
         public virtual void Start()
         {
-        
             agent = gameObject.GetComponent<NavMeshAgent>();
             animator = GetComponent<Animator>();
             player = GameObject.FindGameObjectWithTag("Player");
@@ -53,7 +52,6 @@ namespace Enemy
                 animator.SetBool("hit", true);
                 health -= 1;
                 healthSlider.value = health;
-            
             }
         }
 
@@ -82,9 +80,7 @@ namespace Enemy
             return res;
         }
 
-
-
-        public virtual void OnDrawGizmos()
+        public virtual void OnDrawGizmosSelected()
         {
             // spottedDistance
             Gizmos.color = Color.red;

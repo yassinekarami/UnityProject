@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Weapon.player;
 
-namespace Ellen.attack
+namespace Ellen.combat
 {
     public class PlayerAttackPistol : MonoBehaviour
     {

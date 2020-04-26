@@ -5,7 +5,8 @@ using UnityEngine.AI;
 
 using Ellen.UI;
 using Enemy;
-using Ellen.attack;
+using Ellen.combat;
+using Ellen.move;
 
 namespace Ellen.controller
 {
@@ -17,27 +18,22 @@ namespace Ellen.controller
 
         AudioSource audioSource;
         public NavMeshAgent agent;
-        RaycastHit[] hits; // raycast for movement
+        public PlayerAttackStaff playerAttackStaff;
+        PlayerMove playerMove;
+    
         RaycastHit hit; // raycast for shoot
-        Ray ray;
 
-        public GameObject staffParticle;
-
-        public float jumpForce;
-      
         bool  isRayHit;
-        float lastClickedTime;
-        float attackDelay = 0.9f;
+       
+        
         float lastClickedTimeShoot;
         float shootDelay = 1.0f;
     
         [SerializeField] int hitLayer;
 
-        // strings for input
-        string attackInput = "Attack";
+
 
         // strings for params
-        string jumpForceParam = "jumpForce";
         string speedParam = "speed";
         string isRunningParam = "isRunning";
         string attackParam = "attack";
@@ -54,6 +50,7 @@ namespace Ellen.controller
             audioSource = GetComponent<AudioSource>();
             animator = GetComponent<Animator>();
             rb = GetComponent<Rigidbody>();
+            playerMove = GetComponent<PlayerMove>();
         }
 
         // Update is called once per frame
@@ -61,41 +58,42 @@ namespace Ellen.controller
         {
 
             animator.SetFloat(speedParam, Mathf.Abs(agent.velocity.z));
+            if (playerAttackStaff.beginAttack()) return;
+            if (playerMove.move(agent)) return;
 
-            // combot time
-            if (Time.time - lastClickedTime > attackDelay)
-            {
-                GetComponent<PlayerAttackStaff>().endAttack();
-            }
+            
+            //Physics.Raycast(ray, out hit, 500);
+            //hits = Physics.RaycastAll(ray.origin, ray.direction, 500);
+            //if (Input.GetMouseButtonDown(0) && hits != null)
+            //{
+            //    foreach(RaycastHit hit in hits) {
+            //        hitLayer = hit.transform.gameObject.layer;
 
-            ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            Physics.Raycast(ray, out hit, 500);
-            hits = Physics.RaycastAll(ray.origin, ray.direction, 500);
-            if (Input.GetMouseButtonDown(0) && hits != null)
-            {
-                foreach(RaycastHit hit in hits) {
+            //        Debug.Log(hit.transform.gameObject.name);
+            //        switch (hitLayer)
+            //        {
+            //            case 9: // Enemy layer ==> 9
+            //                playerAttackStaff.beginAttack();
 
-                    hitLayer = hit.transform.gameObject.layer;
-                    switch (hitLayer)
-                    {
-                        case 9: // Enemy layer ==> 9
+            //                //if (Vector3.Distance(gameObject.transform.position, hit.transform.position) < 5)
+            //                //{
 
-                            lastClickedTime = Time.time;
-                            //staff.SetActive(true);
-                            //attack++;
-                            GetComponent<PlayerAttackStaff>().beginAttack();
-                            break;
+            //                //}
+            //                //else agent.SetDestination(hit.point);
 
-                        case 8: // Ground layer ==> 8
-                            agent.SetDestination(hit.point);
-                            break;
 
-                        default:
+            //                break;
 
-                            break;
-                    }
-                }
-            }
+            //            case 8: // Ground layer ==> 8
+            //                agent.SetDestination(hit.point);
+            //                break;
+
+            //            default:
+            //                agent.SetDestination(hit.point);
+            //                break;
+            //        }
+            //    }
+            //}
 
             if (Input.GetMouseButtonDown(1) && gameObject.GetComponent<PlayerInterface>().canShoot())
             {
@@ -105,18 +103,17 @@ namespace Ellen.controller
 
             }
 
-            // fin du shoot
+          //  fin du shoot
             if (Time.time - lastClickedTimeShoot > shootDelay)
             {
                 GetComponent<PlayerAttackPistol>().endShoot();
                 agent.isStopped = false;
             }
-            
+
 
             animator.SetInteger(shootParam, GetComponent<PlayerAttackPistol>().getShoot());
             animator.SetBool(isShootingParam, Input.GetMouseButtonDown(1));
-            animator.SetFloat(jumpForceParam, rb.velocity.y);
-            animator.SetInteger(attackParam, GetComponent<PlayerAttackStaff>().getAttack());
+            animator.SetInteger(attackParam, playerAttackStaff.getAttack());
 
 
             if (Mathf.Abs(agent.velocity.z) > 0)
@@ -175,20 +172,6 @@ namespace Ellen.controller
 
         // collision & trigger funtion
 
-        public void OnTriggerStay(Collider other)
-        {
-            if (GetComponent<PlayerAttackStaff>().getAttack() > 0 && other.gameObject.tag == "Enemy")
-            {
-                if (Input.GetButtonDown(attackInput))
-                {
-                    BaseEnemy baseEnemy = other.gameObject.GetComponent<BaseEnemy>();
-                    if (baseEnemy == null) return;
-                    baseEnemy.setDammage();
-                    staffParticle.GetComponentInChildren<ParticleSystem>().Play();
-                }
-            }
-        }
-
         private void OnTriggerEnter(Collider other)
         {
             switch (other.gameObject.layer)
@@ -203,8 +186,6 @@ namespace Ellen.controller
                     break;
             }
         }
-
-       
 
     }
 }
