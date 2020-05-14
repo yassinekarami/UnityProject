@@ -12,6 +12,7 @@ namespace CameraPlayer
         public Texture2D forbidden;
         public Texture2D health;
         public Texture2D pistol;
+        public Texture2D coin;
 
         CursorMode CursorMode = CursorMode.Auto;
 
@@ -44,6 +45,9 @@ namespace CameraPlayer
                         break;
                     case 11: // Pistol layer ==> 9
                         Cursor.SetCursor(pistol, Vector2.zero, CursorMode);
+                        break;
+                    case 12:
+                        Cursor.SetCursor(coin, Vector2.zero, CursorMode);
                         break;
                     default:
                         Cursor.SetCursor(forbidden, Vector2.zero, CursorMode);

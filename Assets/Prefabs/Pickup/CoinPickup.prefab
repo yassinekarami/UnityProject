@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 3414458817625691479}
   - component: {fileID: 1150068578791718624}
   - component: {fileID: 7645895978001951666}
-  m_Layer: 10
+  m_Layer: 12
   m_Name: CoinPickup
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -29,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 8546456450978965070}
   m_LocalRotation: {x: 0.71777403, y: 0.000000004025552, z: 0.000000004025552, w: 0.6962762}
   m_LocalPosition: {x: 48.087, y: 1.064, z: 18.085}
-  m_LocalScale: {x: 0.5506439, y: 0.5506439, z: 0.5506439}
+  m_LocalScale: {x: 0.5506439, y: 0.035253324, z: 0.5506439}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0

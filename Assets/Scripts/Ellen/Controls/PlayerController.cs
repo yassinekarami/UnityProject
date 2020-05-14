@@ -7,14 +7,15 @@ using Ellen.UI;
 using Enemy;
 using Ellen.combat;
 using Ellen.move;
-
+using Core;
 namespace Ellen.controller
 {
     public class PlayerController : MonoBehaviour
     {
         Animator animator;
         Rigidbody rb;
-   
+
+        GameManager gameManager;
 
         AudioSource audioSource;
         public NavMeshAgent agent;
@@ -51,6 +52,7 @@ namespace Ellen.controller
             animator = GetComponent<Animator>();
             rb = GetComponent<Rigidbody>();
             playerMove = GetComponent<PlayerMove>();
+
         }
 
         // Update is called once per frame
@@ -157,18 +159,18 @@ namespace Ellen.controller
             GetComponent<PlayerAttackPistol>().instantiateShoot(hit.point);
         }
 
-        private void moveCharacter()
-        {
-            if (Input.GetMouseButtonDown(0))
-            {
-                RaycastHit hit;
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                if (Physics.Raycast(ray, out hit, 500))
-                {
-                    agent.SetDestination(hit.point);
-                }
-            }
-        }
+        //private void moveCharacter()
+        //{
+        //    if (Input.GetMouseButtonDown(0))
+        //    {
+        //        RaycastHit hit;
+        //        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        //        if (Physics.Raycast(ray, out hit, 500))
+        //        {
+        //            agent.SetDestination(hit.point);
+        //        }
+        //    }
+        //}
 
         // collision & trigger funtion
 
@@ -177,11 +179,19 @@ namespace Ellen.controller
             switch (other.gameObject.layer)
             {
                 case 10:  // Health layer ==> 9
+
+                    GameManager.updateHealthUI();
                     GetComponent<PlayerInterface>().updateHealth(20);
                     Destroy(other.gameObject);
                     break;
                 case 11: // Pistol layer ==> 9
+                         //     GameManager.updatePickupUI(GameManager.pistolUI, "pistolPickup : ", GameManager.pistol);
+                    GameManager.updatePistolUI();
                     GetComponent<PlayerInterface>().updateShootBar(20);
+                    Destroy(other.gameObject);
+                    break;
+                case 12:
+                    GameManager.updateCoinUI();
                     Destroy(other.gameObject);
                     break;
             }
