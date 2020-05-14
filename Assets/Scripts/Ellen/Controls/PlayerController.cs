@@ -63,40 +63,6 @@ namespace Ellen.controller
             if (playerAttackStaff.beginAttack()) return;
             if (playerMove.move(agent)) return;
 
-            
-            //Physics.Raycast(ray, out hit, 500);
-            //hits = Physics.RaycastAll(ray.origin, ray.direction, 500);
-            //if (Input.GetMouseButtonDown(0) && hits != null)
-            //{
-            //    foreach(RaycastHit hit in hits) {
-            //        hitLayer = hit.transform.gameObject.layer;
-
-            //        Debug.Log(hit.transform.gameObject.name);
-            //        switch (hitLayer)
-            //        {
-            //            case 9: // Enemy layer ==> 9
-            //                playerAttackStaff.beginAttack();
-
-            //                //if (Vector3.Distance(gameObject.transform.position, hit.transform.position) < 5)
-            //                //{
-
-            //                //}
-            //                //else agent.SetDestination(hit.point);
-
-
-            //                break;
-
-            //            case 8: // Ground layer ==> 8
-            //                agent.SetDestination(hit.point);
-            //                break;
-
-            //            default:
-            //                agent.SetDestination(hit.point);
-            //                break;
-            //        }
-            //    }
-            //}
-
             if (Input.GetMouseButtonDown(1) && gameObject.GetComponent<PlayerInterface>().canShoot())
             {
                 GetComponent<PlayerAttackPistol>().beginShoot();
@@ -105,7 +71,7 @@ namespace Ellen.controller
 
             }
 
-          //  fin du shoot
+            //  fin du shoot
             if (Time.time - lastClickedTimeShoot > shootDelay)
             {
                 GetComponent<PlayerAttackPistol>().endShoot();
@@ -159,21 +125,7 @@ namespace Ellen.controller
             GetComponent<PlayerAttackPistol>().instantiateShoot(hit.point);
         }
 
-        //private void moveCharacter()
-        //{
-        //    if (Input.GetMouseButtonDown(0))
-        //    {
-        //        RaycastHit hit;
-        //        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        //        if (Physics.Raycast(ray, out hit, 500))
-        //        {
-        //            agent.SetDestination(hit.point);
-        //        }
-        //    }
-        //}
-
         // collision & trigger funtion
-
         private void OnTriggerEnter(Collider other)
         {
             switch (other.gameObject.layer)
@@ -185,7 +137,6 @@ namespace Ellen.controller
                     Destroy(other.gameObject);
                     break;
                 case 11: // Pistol layer ==> 9
-                         //     GameManager.updatePickupUI(GameManager.pistolUI, "pistolPickup : ", GameManager.pistol);
                     GameManager.updatePistolUI();
                     GetComponent<PlayerInterface>().updateShootBar(20);
                     Destroy(other.gameObject);

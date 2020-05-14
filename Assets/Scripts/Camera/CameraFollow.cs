@@ -15,13 +15,6 @@ namespace CameraPlayer
         {
             this.player = GameObject.FindGameObjectWithTag("Player");
             this.offset = transform.position - this.player.transform.position;
-
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-         
         }
 
         private void LateUpdate()
