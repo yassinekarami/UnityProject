@@ -8,7 +8,7 @@ namespace Weapon.player
     public class Bullet : MonoBehaviour
     {
         public float speed;
-        float timer;
+        float timer = 0f;
         Vector3 target;
 
         public GameObject explostionParticle;
@@ -23,28 +23,11 @@ namespace Weapon.player
         // Update is called once per frame
         void Update()
         {
-
+            timer = timer + Time.deltaTime;
             //  transform.position += transform.forward * Time.deltaTime * speed;
             transform.Translate(0.0f, 0.0f, speed * Time.deltaTime);
             if (timer > 5f) Destroy(gameObject);
         }
-
-        //private void OnTriggerEnter(Collider other)
-        //{
-        //    if (other.gameObject.tag != "Player")
-        //    {
-        //        Debug.Log(other.gameObject.tag);
-        //        if (other.gameObject.tag == "Enemy")
-        //        {
-        //            onHitEnemy?.Invoke();
-        //            Debug.Log("iciiiii");
-        //        }
-
-        //    //    ContactPoint contact = other.contactOffset;
-        //    //    explostionParticle.GetComponentInChildren<ParticleSystem>().Play();
-        //        Destroy(gameObject);
-        //    }
-        //}
 
         private void OnCollisionEnter(Collision collision)
         {
@@ -80,7 +63,6 @@ namespace Weapon.player
         IEnumerator destroyParticle(GameObject p)
         {
             float duration = p.GetComponent<ParticleSystem>().main.duration;
-
             yield return new WaitForSeconds(duration + 1);
             Destroy(p);
           

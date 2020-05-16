@@ -20,12 +20,6 @@ namespace Ellen.UI
             health = healthBar.GetComponent<Image>().fillAmount * 100;
             shoot = shootBar.GetComponent<Image>().fillAmount * 100;
         }
-
-        // Update is called once per frame
-        void Update()
-        {
-        
-        }
         
         public void updateHealth(float value)
         {

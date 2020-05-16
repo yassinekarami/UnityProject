@@ -8,7 +8,6 @@ namespace Weapon.enemy
     {
         GameObject player;
         Vector3 target;
-        public float explosionRadius;
         // particle system to be emitted
         public GameObject fireCirle;
 
@@ -68,22 +67,27 @@ namespace Weapon.enemy
 
         private void OnTriggerEnter(Collider other)
         {
-        
-            Collider[] hitColliders = Physics.OverlapSphere(other.transform.position, explosionRadius);
-            for (int i = 0; i < hitColliders.Length; i++)
+            PlayerController player = other.gameObject.GetComponent<PlayerController>();
+            if(player != null)
             {
-                if (hitColliders[i].gameObject.tag == "Player")
-                {
-                    //PlayerController player = hitColliders[i].gameObject.GetComponent<PlayerController>();
-                    //player.takeDammage(-10);
-                    hitColliders[i].gameObject.GetComponent<PlayerController>().takeDammage(-10);
-                    Destroy(gameObject);
-                }
-               
-                //GameObject fire = Instantiate(fireCirle, player.gameObject.transform.position, Quaternion.identity);
-                //fire.GetComponent<ParticleSystem>().Play();
-                //StartCoroutine(destroyParticle(fire));
+                other.gameObject.GetComponent<PlayerController>().takeDammage(-10);
+                Destroy(gameObject);
             }
+            //Collider[] hitColliders = Physics.OverlapSphere(other.transform.position, explosionRadius);
+            //for (int i = 0; i < hitColliders.Length; i++)
+            //{
+            //    if (hitColliders[i].gameObject.tag == "Player")
+            //    {
+            //        //PlayerController player = hitColliders[i].gameObject.GetComponent<PlayerController>();
+            //        //player.takeDammage(-10);
+            //        hitColliders[i].gameObject.GetComponent<PlayerController>().takeDammage(-10);
+            //        Destroy(gameObject);
+            //    }
+               
+            //    //GameObject fire = Instantiate(fireCirle, player.gameObject.transform.position, Quaternion.identity);
+            //    //fire.GetComponent<ParticleSystem>().Play();
+            //    //StartCoroutine(destroyParticle(fire));
+            //}
         }
 
 
@@ -97,11 +101,6 @@ namespace Weapon.enemy
             Destroy(gameObject);
         }
 
-        private void OnDrawGizmos()
-        {
-            Gizmos.color = Color.green;
-            Gizmos.DrawSphere(gameObject.transform.position, explosionRadius);
-        }
     }
 }
 

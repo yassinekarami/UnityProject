@@ -13,10 +13,6 @@ namespace Enemy
         public GameObject grenadeSpawn;
         public GameObject[] points;
 
-        //delegate and event
-        public delegate void attackPlayer();
-        public static attackPlayer onAttackPlayer;
-
         // strings for params
         string hitRandom = "hitRandom";
         string speed = "speed";
@@ -24,17 +20,17 @@ namespace Enemy
         // Start is called before the first frame update
         public override void Start()
         {
-           
-            health = 5;
             points = GameObject.FindGameObjectsWithTag("Point");
+            health = 5;
             base.Start();
-
         }
 
         // Update is called once per frame
         public override void Update()
         {
             base.Update();
+            distance = Vector3.Distance(transform.position, player.transform.position);
+            animator.SetFloat(distanceParam, distance);
             if (!stopMoving())
             {
                 agent.isStopped = false;
@@ -54,7 +50,7 @@ namespace Enemy
 
         private void setTarget(GameObject[] points)
         {
-            GameObject destination = points[Random.Range(0, points.Length - 1)];
+            GameObject destination = points[Random.Range(0, points.Length)];
             agent.SetDestination(destination.transform.position);
         }
 
@@ -63,6 +59,7 @@ namespace Enemy
         {
             // return true si la distance est inférieur a 12 
             // return false si la distance est suppérieur
+            transform.LookAt(player.transform.position);
             return Vector3.Distance(transform.position, player.transform.position) < 12;
         }
 
@@ -79,8 +76,17 @@ namespace Enemy
         }
         public override void attack()
         {
-            transform.rotation = Quaternion.LookRotation(player.transform.position);
+            //  transform.rotation = Quaternion.LookRotation(player.transform.position);
             Instantiate(grenade, grenadeSpawn.transform.position, Quaternion.identity);    
+        }
+
+        private void OnDrawGizmos()
+        {
+            Gizmos.color = Color.green;
+            foreach(GameObject point in points)
+            {
+                Gizmos.DrawSphere(point.transform.position, 1f);
+            }
         }
     }
 }

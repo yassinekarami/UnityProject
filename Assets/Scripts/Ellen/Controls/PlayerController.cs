@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.AI;
 
 using Ellen.UI;
-using Enemy;
 using Ellen.combat;
 using Ellen.move;
 using Core;
@@ -25,14 +24,13 @@ namespace Ellen.controller
         RaycastHit hit; // raycast for shoot
 
         bool  isRayHit;
-       
-        
+              
         float lastClickedTimeShoot;
         float shootDelay = 1.0f;
     
         [SerializeField] int hitLayer;
 
-
+        public bool isDead = false;
 
         // strings for params
         string speedParam = "speed";
@@ -52,23 +50,23 @@ namespace Ellen.controller
             animator = GetComponent<Animator>();
             rb = GetComponent<Rigidbody>();
             playerMove = GetComponent<PlayerMove>();
-
         }
 
         // Update is called once per frame
         void Update()
         {
-
             animator.SetFloat(speedParam, Mathf.Abs(agent.velocity.z));
             if (playerAttackStaff.beginAttack()) return;
             if (playerMove.move(agent)) return;
 
             if (Input.GetMouseButtonDown(1) && gameObject.GetComponent<PlayerInterface>().canShoot())
             {
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                Physics.Raycast(ray.origin, ray.direction, out hit, 500f);
+                transform.LookAt(hit.point);
                 GetComponent<PlayerAttackPistol>().beginShoot();
                 lastClickedTimeShoot = Time.time;
                 agent.isStopped = true;
-
             }
 
             //  fin du shoot
@@ -110,6 +108,7 @@ namespace Ellen.controller
             if (GetComponent<PlayerInterface>().health <= 0)
             {
                 animator.SetTrigger(deathParam);
+                isDead = true;
             }
         }
         public void endHitAnimation()
@@ -120,7 +119,6 @@ namespace Ellen.controller
         private void instantiateBullet()
         {
             Vector3 rotation = transform.position - hit.collider.transform.position;
-            transform.LookAt(hit.point);
             gameObject.GetComponent<PlayerInterface>().updateShootBar(-10);
             GetComponent<PlayerAttackPistol>().instantiateShoot(hit.point);
         }
@@ -130,18 +128,17 @@ namespace Ellen.controller
         {
             switch (other.gameObject.layer)
             {
-                case 10:  // Health layer ==> 9
-
+                case 10:  // Health layer ==> 10
                     GameManager.updateHealthUI();
                     GetComponent<PlayerInterface>().updateHealth(20);
                     Destroy(other.gameObject);
                     break;
-                case 11: // Pistol layer ==> 9
+                case 11: // Pistol layer ==> 11
                     GameManager.updatePistolUI();
                     GetComponent<PlayerInterface>().updateShootBar(20);
                     Destroy(other.gameObject);
                     break;
-                case 12:
+                case 12: // Coin layer ==> 12
                     GameManager.updateCoinUI();
                     Destroy(other.gameObject);
                     break;

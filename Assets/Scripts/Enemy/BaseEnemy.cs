@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.AI;
-
+using Ellen.controller;
 namespace Enemy
 {
     [RequireComponent(typeof(NavMeshAgent))]
@@ -19,9 +19,10 @@ namespace Enemy
         
         protected Slider healthSlider;
 
-
+      
         //string params
         protected string distanceParam = "distance";
+        protected string playerDeathParam = "playerDeath";
 
         // parameter for gizmo
         public float spottedDistance;
@@ -41,8 +42,12 @@ namespace Enemy
         // Update is called once per frame
         public virtual void Update()
         {
-            distance = Vector3.Distance(transform.position, player.transform.position);
-            animator.SetFloat(distanceParam, distance);
+            if (player.GetComponent<PlayerController>().isDead)
+            {
+                animator.SetBool(playerDeathParam, player.GetComponent<PlayerController>().isDead);
+                agent.isStopped = true;
+                return;
+            }
         }
 
         public virtual void setDammage()

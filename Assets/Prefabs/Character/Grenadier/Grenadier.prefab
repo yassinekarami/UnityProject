@@ -60,6 +60,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 0, b: 0, a: 0.5882353}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -320,6 +321,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -767,11 +769,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   distance: 0
   health: 5
+  agent: {fileID: 0}
   spottedDistance: 20
   attackDistance: 20
   grenade: {fileID: 7999066637074886528, guid: fbf7c345c1b558a4c92c0de45660f12f, type: 3}
   grenadeSpawn: {fileID: 927224157771832257}
   points:
+  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}

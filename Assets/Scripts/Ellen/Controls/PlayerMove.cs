@@ -19,15 +19,13 @@ namespace Ellen.move
                 foreach (RaycastHit hit in hits)
                 {
                     // if the ray hit an enemy
-                    if (hit.transform.gameObject.layer == 9 )
+                    if (hit.transform.gameObject.layer == 0 || hit.transform.gameObject.layer == 9)
                     {
                         return false;
                     }
-                    else if (hit.transform.gameObject.layer == 8 )
-                    {
-                        agent.SetDestination(hit.point);
-                        return true;
-                    } 
+
+                    agent.SetDestination(hit.point);
+                    return true;
                 }
             }
             return false;

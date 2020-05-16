@@ -15,7 +15,6 @@ namespace Enemy
         Vector3 target;
 
         //string params
-        string closestObjParam = "closestObj";
         string cooldownParam = "cooldown";
         string closeObjParam = "closeObj";
 
@@ -27,12 +26,13 @@ namespace Enemy
             base.Start();
             target = player.transform.position;
             agent.SetDestination(target);
-        
         }
 
         // Update is called once per frame
         public override void Update()
         {
+            base.Update();
+
             animator.SetInteger(closeObjParam, closeObject.Count);
             agent.SetDestination(target);
             if (agent.remainingDistance >=1)
@@ -65,8 +65,7 @@ namespace Enemy
             if (other.gameObject.tag == "Player")
             {
                 closeObject.Add(other.gameObject);
-            }
-               
+            } 
         }
 
         private void OnTriggerExit(Collider other)

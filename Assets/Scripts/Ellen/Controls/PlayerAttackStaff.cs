@@ -31,7 +31,7 @@ namespace Ellen.combat
             gameObject.SetActive(false);
           
             agent = GetComponentInParent<NavMeshAgent>();
-            attackRange = agent.stoppingDistance;
+            //attackRange = agent.stoppingDistance;
         }
 
         // Update is called once per frame
@@ -51,6 +51,7 @@ namespace Ellen.combat
         }
         public bool beginAttack()
         {
+         
             ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             hits = Physics.RaycastAll(ray.origin, ray.direction, 500);
             if(Input.GetMouseButtonDown(0))
@@ -60,17 +61,19 @@ namespace Ellen.combat
                     // si ce qu'on a toucher n'est pas un enemy
                     if (hit.transform.gameObject.GetComponent<BaseEnemy>() == null) continue;
 
-                    if(Vector3.Distance(transform.position, hit.point) > attackRange)
+                    else 
                     {
-                        agent.SetDestination(hit.point);
-                        return false;
+                        if (Vector3.Distance(transform.position, hit.transform.position) > attackRange)
+                        {
+                            agent.SetDestination(hit.point);
+                            return false;
+                        }
+                        
+                        nbattack++;
+                        lastClickedTime = Time.time;
+                        gameObject.SetActive(true);
+                        return true;
                     }
-
-                    nbattack++;
-                    lastClickedTime = Time.time;
-                    gameObject.SetActive(true);
-                    return true;
-
                 } 
             }
             return false;
